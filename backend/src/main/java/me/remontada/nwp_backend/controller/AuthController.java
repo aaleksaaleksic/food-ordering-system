@@ -7,12 +7,11 @@ import me.remontada.nwp_backend.service.UserService;
 import me.remontada.nwp_backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -54,6 +53,21 @@ public class AuthController {
 
 
 
+    }
+
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication auth) {
+        if (auth == null || !(auth.getPrincipal() instanceof User u)) {
+            return ResponseEntity.status(401).body(Map.of("message","Unauthorized"));
+        }
+        Map<String, Object> body = Map.of(
+                "email", u.getEmail(),
+                "firstName", u.getFirstName(),
+                "lastName", u.getLastName(),
+                "permissions", u.getPermissions()
+        );
+        return ResponseEntity.ok(body);
     }
 
 
