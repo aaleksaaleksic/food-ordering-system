@@ -1,5 +1,6 @@
 package me.remontada.nwp_backend.controller;
 
+import jakarta.validation.Valid;
 import me.remontada.nwp_backend.dto.AuthResponse;
 import me.remontada.nwp_backend.dto.LoginRequest;
 import me.remontada.nwp_backend.model.User;
@@ -29,7 +30,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest){
 
         Optional<User> userOptional = userService.findByEmail(loginRequest.getEmail());
 

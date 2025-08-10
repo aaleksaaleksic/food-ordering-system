@@ -11,6 +11,8 @@ public interface UserService {
 
     List<User> findAll();
 
+    boolean existsByEmail(String email);
+
     User save (User user);
 
 

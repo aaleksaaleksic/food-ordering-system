@@ -1,7 +1,9 @@
 package me.remontada.nwp_backend.controller;
 
+import jakarta.validation.Valid;
 import me.remontada.nwp_backend.dto.UserRequest;
 import me.remontada.nwp_backend.dto.UserResponse;
+import me.remontada.nwp_backend.exception.EmailAlreadyUsedException;
 import me.remontada.nwp_backend.model.User;
 import me.remontada.nwp_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('CAN_CREATE_USERS')")
-    public UserResponse createUser(@RequestBody UserRequest request) {
+    public UserResponse createUser(@Valid @RequestBody UserRequest request) {
 
         User newUser = new User();
 
@@ -84,6 +86,10 @@ public class UserController {
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
+        }
+
+        if (!userOptional.equals(request.getEmail()) && userService.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyUsedException(request.getEmail());
         }
 
         User user = userOptional.get();
