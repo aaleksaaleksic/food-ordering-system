@@ -1,5 +1,7 @@
 package me.remontada.nwp_backend.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -8,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
-    private String email;
-    private String password;
+
+    @NotBlank @Email String email;
+    @NotBlank private String password;
 }

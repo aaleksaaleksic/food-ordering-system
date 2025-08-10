@@ -35,15 +35,23 @@ public class AuthController {
         Optional<User> userOptional = userService.findByEmail(loginRequest.getEmail());
 
         if(userOptional.isEmpty()){
+
             return ResponseEntity.status(401).body("Invalid credentials!");
         }
         User user = userOptional.get();
 
         if(!passwordEncoder.matches(loginRequest.getPassword(),user.getPassword())){
+            System.out.println("LOGIN TRY: " + loginRequest.getEmail()
+                    + " matches=" + passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()));
+
             return ResponseEntity.status(401).body("Invalid credentials!");
         }
 
         String token = jwtUtil.generateToken(loginRequest.getEmail());
+
+        System.out.println("LOGIN TRY: " + loginRequest.getEmail()
+                + " matches=" + passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()));
+
 
         return ResponseEntity.ok(new AuthResponse(token));
 
