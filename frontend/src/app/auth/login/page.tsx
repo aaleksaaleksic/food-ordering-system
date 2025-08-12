@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import AuthGuard from "@/components/auth/AuthGuard";
+import AppHeader from "@/components/layout/AppHeader";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -27,7 +29,7 @@ export default function LoginPage() {
 
     useEffect(() => {
         if (isSuccess) {
-            //router.push('/users');
+            router.push('/users');
         }
     }, [isSuccess, router]);
 
@@ -37,6 +39,8 @@ export default function LoginPage() {
     };
 
     return (
+        <AuthGuard allow = "guest" redirectToIfUnauthed="/users">
+            <AppHeader/>
         <div className="min-h-screen w-full flex flex-col items-center justify-center px-4">
 
             <div className="absolute top-4 right-4 flex items-center gap-3">
@@ -69,5 +73,6 @@ export default function LoginPage() {
                 </CardContent>
             </Card>
         </div>
+        </AuthGuard>
     );
 }
