@@ -3,76 +3,64 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import LoginForm, { LoginFormData } from '@/components/auth/login-form';
-import { useLogin, useMe, useLogout } from '@/hooks/use-auth';
-
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import AuthGuard from "@/components/auth/AuthGuard";
-import AppHeader from "@/components/layout/AppHeader";
+import { useLogin, useMe } from '@/hooks/use-auth';
+import { useCan } from '@/hooks/use-permissions';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { LoginForm, type LoginFormData } from '@/components/auth/login-form';
+import { FoodOrderingHero } from '@/components/auth/food-ordering-hero';
+import { dt } from '@/lib/design-tokens';
 
 export default function LoginPage() {
     const router = useRouter();
 
-
-    const { data: me } = useMe();
-    const { mutate: doLogin, isPending, isSuccess } = useLogin();
-    const logout = useLogout();
-
+    const { data: me, isLoading: isMeLoading } = useMe();
+    const { mutate: doLogin, isPending } = useLogin();
+    const { isLoaded } = useCan();
 
     useEffect(() => {
-        if (isSuccess) {
+        if (me && isLoaded) {
             router.push('/users');
         }
-    }, [isSuccess, router]);
+    }, [me, isLoaded, router]);
 
-    const handleSubmit = (vals: LoginFormData) => {
-
-        doLogin(vals);
+    const handleSubmit = (values: LoginFormData) => {
+        doLogin(values, {
+            onSuccess: () => {
+                // Automatic redirect through useEffect above
+            }
+        });
     };
 
-    return (
-        <AuthGuard allow = "guest" redirectToIfUnauthed="/users">
-            <AppHeader/>
-        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4">
+    // Ako je korisnik već ulogovan, prikaži loading
+    if (isMeLoading || (me && isLoaded)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+            </div>
+        );
+    }
 
-            <div className="absolute top-4 right-4 flex items-center gap-3">
-                {me && (
-                    <>
-            <span className="text-sm text-muted-foreground">
-              Logged in as <b>{me.email}</b>
-            </span>
-                        <Separator orientation="vertical" className="h-6" />
-                        <Button variant="secondary" onClick={() => router.push('/users')}>
-                            Go to users
-                        </Button>
-                        <Button variant="outline" onClick={logout}>
-                            Logout
-                        </Button>
-                    </>
-                )}
+    return (
+        <div className={`${dt.layouts.authPage} flex items-center justify-center p-4`}>
+
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-200 rounded-full opacity-20 blur-3xl"></div>
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-red-200 rounded-full opacity-20 blur-3xl"></div>
             </div>
 
-            <Card className="w-[360px] shadow-md">
-                <CardHeader className="space-y-2">
-                    <CardTitle>Login</CardTitle>
-                    <CardDescription>
-                        Welcome back! Sign in to continue.
-                    </CardDescription>
-                </CardHeader>
+            <div className="w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative">
 
-                <CardContent>
-                    <LoginForm enabled={!isPending} onSubmitAction={handleSubmit} />
-                </CardContent>
-            </Card>
+                {/* Food ordering hero content */}
+                <FoodOrderingHero />
+
+                {/*Login form */}
+                <LoginForm
+                    onSubmit={handleSubmit}
+                    isPending={isPending}
+                />
+
+            </div>
         </div>
-        </AuthGuard>
     );
 }

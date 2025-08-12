@@ -12,6 +12,9 @@ export const toastInfo = (message: string, description?: string) =>
 export const toastWarning = (message: string, description?: string) =>
     toast.warning(message, description ? { description } : undefined);
 
+export const toastError = (message: string, description?: string) =>
+    toast.error(message, description ? { description } : undefined);
+
 export function toastRequestError(err: unknown, fallback = 'Something went wrong') {
     const ax = err as AxiosError<any>;
     if (ax?.isAxiosError) {
