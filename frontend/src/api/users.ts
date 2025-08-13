@@ -15,3 +15,6 @@ export const createUser = (client: AxiosInstance, data: any) =>
 
 export const updateUser = (client: AxiosInstance, id: number, data: any) =>
     client.put<UserDto>(`/users/${id}`, data);
+
+export const getUserById = (client: AxiosInstance, id: number) =>
+    client.get<UserDto>(`/users/${id}`);
