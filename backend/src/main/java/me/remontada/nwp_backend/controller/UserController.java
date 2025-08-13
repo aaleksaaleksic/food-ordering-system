@@ -48,6 +48,28 @@ public class UserController {
 
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('CAN_READ_USERS')")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        Optional<User> userOptional = userService.findById(id);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = userOptional.get();
+
+        UserResponse response = new UserResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPermissions()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('CAN_CREATE_USERS')")
     public UserResponse createUser(@Valid @RequestBody UserRequest request) {
@@ -88,7 +110,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        if (!userOptional.equals(request.getEmail()) && userService.existsByEmail(request.getEmail())) {
+        if (!userOptional.get().getEmail().equals(request.getEmail()) && userService.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyUsedException(request.getEmail());
         }
 
