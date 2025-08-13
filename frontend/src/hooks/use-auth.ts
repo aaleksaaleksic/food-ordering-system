@@ -36,8 +36,8 @@ export function useMe() {
         queryFn: async () => (await me(client)).data,
         enabled: hasToken,
         retry : false,
-        refetchOnWindowFocus : false,
-        staleTime: 60_000,
+        refetchOnWindowFocus : true,
+        staleTime: 10_000,
     });
 }
 

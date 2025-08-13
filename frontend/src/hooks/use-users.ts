@@ -5,6 +5,7 @@ import { useHttpClient } from "@/context/HttpClientContext";
 import {getAllUsers, deleteUser, createUser, updateUser, getUserById} from "@/api/users";
 import { toastSuccess, toastRequestError } from '@/lib/toast';
 import {CreateUserRequest, UpdateUserRequest} from "@/types/user-request";
+import {useMe} from "@/hooks/use-auth";
 
 
 export function useUsers() {
@@ -36,6 +37,8 @@ export function useCreateUser() {
 export function useUpdateUser() {
     const client = useHttpClient();
     const qc = useQueryClient();
+    const me = useMe();
+
 
     return useMutation({
         mutationFn: ({ id, data }: { id: number; data: UpdateUserRequest }) =>
@@ -44,6 +47,11 @@ export function useUpdateUser() {
 
             qc.invalidateQueries({ queryKey: ["users"] });
             qc.invalidateQueries({ queryKey: ["users", variables.id] });
+
+            if (me.data?.id && me.data.id === variables.id) {
+                qc.invalidateQueries({ queryKey: ["me"] });
+            }
+
             toastSuccess("User updated successfully.");
         },
         onError: (error) => toastRequestError(error, "Failed to update user"),
