@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Slf4j
@@ -43,9 +42,9 @@ public class OrderController {
             Authentication authentication) {
         ;
 
-        Optional<User> optionalUser = userService.findByEmail(authentication.getName());
 
-        User currentUser = optionalUser.get();
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<OrderStatus> orderStatuses = null;
         if (status != null && !status.isEmpty()) {
@@ -72,8 +71,8 @@ public class OrderController {
             Authentication authentication) {
 
 
-        Optional<User> optionalUser = userService.findByEmail(authentication.getName());
-        User currentUser = optionalUser.get();
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Order order = orderService.placeOrder(currentUser, request.getItems());
 
         return ResponseEntity.ok(order);
@@ -88,9 +87,8 @@ public class OrderController {
 
        ;
 
-        Optional<User> optionalUser = userService.findByEmail(authentication.getName());
-
-        User currentUser = optionalUser.get();
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Order order = orderService.scheduleOrder(currentUser, request.getItems(), request.getScheduledFor());
 
         return ResponseEntity.ok(order);
@@ -104,8 +102,8 @@ public class OrderController {
             Authentication authentication) {
 
 
-        Optional<User> optionalUser = userService.findByEmail(authentication.getName());
-        User currentUser = optionalUser.get();
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Order order = orderService.trackOrder(id, currentUser);
 
         return ResponseEntity.ok(order);
@@ -119,10 +117,9 @@ public class OrderController {
             Authentication authentication) {
 
 
-        Optional<User> optionalUser = userService.findByEmail(authentication.getName());
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-
-        User currentUser = optionalUser.get();
         Order order = orderService.cancelOrder(id, currentUser);
 
         return ResponseEntity.ok(order);
