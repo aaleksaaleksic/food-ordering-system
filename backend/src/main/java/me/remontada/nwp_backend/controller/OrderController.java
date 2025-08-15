@@ -1,7 +1,6 @@
 package me.remontada.nwp_backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import me.remontada.nwp_backend.dto.OrderItemRequest;
 import me.remontada.nwp_backend.dto.PlaceOrderRequest;
 import me.remontada.nwp_backend.dto.ScheduleOrderRequest;
 import me.remontada.nwp_backend.model.Order;

@@ -2,24 +2,28 @@ package me.remontada.nwp_backend.dto;
 
 import jakarta.validation.Valid;
 
-import me.remontada.nwp_backend.dto.OrderItemRequest;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ScheduleOrderRequest {
+
+
     @Valid
+    @NotEmpty(message = "Order must contain at least one item")
     private List<OrderItemRequest> items;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @NotNull(message = "Scheduled time is required")
+    @Future(message = "Scheduled time must be in the future")
     private LocalDateTime scheduledFor;
 
-    public ScheduleOrderRequest() {}
-
-    public List<OrderItemRequest> getItems() { return items; }
-    public void setItems(List<OrderItemRequest> items) { this.items = items; }
-
-    public LocalDateTime getScheduledFor() { return scheduledFor; }
-    public void setScheduledFor(LocalDateTime scheduledFor) { this.scheduledFor = scheduledFor; }
 }
