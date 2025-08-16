@@ -13,7 +13,11 @@ import { toastSuccess, toastRequestError } from '@/lib/toast';
 import type { OrderSearchParams } from "@/types/order";
 import type {PlaceOrderRequest, ScheduleOrderRequest} from "@/api/request/order";
 
-export function useOrders(searchParams: OrderSearchParams = {}, enablePolling = false) {
+export function useOrders(
+    searchParams: OrderSearchParams = {},
+    enablePolling = false,
+    enabled = true,
+) {
     const client = useHttpClient();
 
     return useQuery({
@@ -23,6 +27,7 @@ export function useOrders(searchParams: OrderSearchParams = {}, enablePolling = 
         refetchOnWindowFocus: false,
         staleTime: enablePolling ? 0 : 30_000,
         refetchInterval: enablePolling ? 5000 : false,
+        enabled
     });
 }
 

@@ -12,6 +12,7 @@ import { OrdersTable } from "@/components/orders/orders-table";
 import { OrderStatusBadge } from "@/components/orders/order-status-badge";
 import { useOrders } from "@/hooks/use-orders";
 import { useCan } from "@/hooks/use-permissions";
+import { useMe } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,8 +47,10 @@ export default function OrdersPage() {
     const { isAdmin } = useCan();
     const [searchParams, setSearchParams] = useState<OrderSearchParams>({});
     const [isPollingEnabled, setIsPollingEnabled] = useState(true);
+    const { data: me } = useMe();
 
-    const { data: orders, isLoading, error, refetch } = useOrders(searchParams, isPollingEnabled);
+    const { data: orders, isLoading, error, refetch } = useOrders(searchParams, isPollingEnabled, !!me);
+
 
     const form = useForm<SearchFormData>({
         resolver: zodResolver(searchSchema),

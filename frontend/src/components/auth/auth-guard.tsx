@@ -31,14 +31,17 @@ export function AuthGuard({ children, permission, fallback }: AuthGuardProps) {
         }
     }, [router]);
 
-    if (isLoading) {
+    useEffect(() => {
+        if (!isLoading && (error || !me)) {
+            router.replace("/auth/login");
+        }
+    }, [isLoading, error, me, router]);
+
+    if (isLoading || error || !me) {
         return <PageSpinner />;
     }
 
-    if (error || !me) {
-        router.replace("/auth/login");
-        return <PageSpinner />;
-    }
+
 
     if (permission && !can(permission)) {
         if (fallback) {
@@ -53,7 +56,7 @@ export function AuthGuard({ children, permission, fallback }: AuthGuardProps) {
                     </CardHeader>
                     <CardContent className="text-center space-y-4">
                         <p className="text-muted-foreground">
-                            You don't have permission to access this page.
+                            You don&apos;t have permission to access this page.
                         </p>
                         <Button
                             variant="secondary"
