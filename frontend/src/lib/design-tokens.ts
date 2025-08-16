@@ -15,9 +15,9 @@ export const designTokens = {
         pageTitle: "text-2xl font-bold text-gray-900",
         // h2
         sectionTitle: "text-xl font-semibold text-gray-900",
-        // h3 - naslov podsekcije
+        // h3
         subsectionTitle: "text-lg font-medium text-gray-900",
-        // h4 - mali naslov
+        // h4
         cardTitle: "text-base font-semibold text-gray-900",
         // Obični tekst
         body: "text-sm text-gray-700",
