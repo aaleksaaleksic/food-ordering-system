@@ -18,7 +18,7 @@ export default function LoginPage() {
     const { isLoaded } = useCan();
 
     useEffect(() => {
-        if (me && isLoaded) {
+        if (me && isLoaded()) {
             router.push('/users');
         }
     }, [me, isLoaded, router]);
@@ -26,13 +26,11 @@ export default function LoginPage() {
     const handleSubmit = (values: LoginFormData) => {
         doLogin(values, {
             onSuccess: () => {
-                // Automatic redirect through useEffect above
             }
         });
     };
 
-    // Ako je korisnik već ulogovan, prikaži loading
-    if (isMeLoading || (me && isLoaded)) {
+    if (isMeLoading || (me && isLoaded())) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <LoadingSpinner size="lg" />

@@ -4,7 +4,7 @@ import { useMe } from "@/hooks/use-auth";
 import type { Permission } from "@/types/permissions";
 
 export function useCan() {
-    const { data: me } = useMe();
+    const { data: me, isLoading } = useMe();
 
     const can = (permission: Permission): boolean => {
         if (!me?.permissions) return false;
@@ -20,6 +20,8 @@ export function useCan() {
         if (!me?.permissions) return false;
         return permissions.every(permission => me.permissions.includes(permission));
     };
+
+    const isLoaded = () => !isLoading && !!me;
 
     const canManageOrders = () => canAny([
         "CAN_SEARCH_ORDER",
@@ -50,6 +52,7 @@ export function useCan() {
         canManageOrders,
         canManageUsers,
         isAdmin,
+        isLoaded,
         permissions: me?.permissions || []
     };
 }
