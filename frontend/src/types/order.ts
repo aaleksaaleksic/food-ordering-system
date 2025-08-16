@@ -1,0 +1,47 @@
+export type OrderStatus =
+    | "ORDERED"
+    | "PREPARING"
+    | "IN_DELIVERY"
+    | "DELIVERED"
+    | "CANCELED";
+
+export interface Dish {
+    id: number;
+    name: string;
+    description?: string;
+    price: number;
+    category: string;
+    available: boolean;
+}
+
+export interface OrderItem {
+    id: number;
+    dish: Dish;
+    quantity: number;
+    priceAtTime: number;
+}
+
+export interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
+export interface Order {
+    id: number;
+    status: OrderStatus;
+    createdBy: User;
+    active: boolean;
+    createdAt: string;
+    scheduledFor?: string;
+    items: OrderItem[];
+}
+
+
+export interface OrderSearchParams {
+    status?: OrderStatus[];
+    dateFrom?: string;
+    dateTo?: string;
+    userId?: number;
+}
