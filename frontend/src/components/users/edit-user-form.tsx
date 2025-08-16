@@ -40,6 +40,11 @@ const ALL_PERMISSIONS: Permission[] = [
     "CAN_READ_USERS",
     "CAN_UPDATE_USERS",
     "CAN_DELETE_USERS",
+    "CAN_SEARCH_ORDER",
+    "CAN_PLACE_ORDER",
+    "CAN_CANCEL_ORDER",
+    "CAN_TRACK_ORDER",
+    "CAN_SCHEDULE_ORDER"
 ];
 
 const PERMISSION_LABELS: Record<Permission, string> = {
@@ -47,6 +52,25 @@ const PERMISSION_LABELS: Record<Permission, string> = {
     CAN_READ_USERS: "Read Users",
     CAN_UPDATE_USERS: "Update Users",
     CAN_DELETE_USERS: "Delete Users",
+    CAN_SEARCH_ORDER: "Search Orders",
+    CAN_PLACE_ORDER: "Place Orders",
+    CAN_CANCEL_ORDER: "Cancel Orders",
+    CAN_TRACK_ORDER: "Track Orders",
+    CAN_SCHEDULE_ORDER: "Schedule Orders"
+
+};
+
+const PERMISSION_DESCRIPTIONS: Record<Permission, string> = {
+
+    CAN_CREATE_USERS: "Can add new users to the system",
+    CAN_READ_USERS: "Can view user list and details",
+    CAN_UPDATE_USERS: "Can edit existing user information",
+    CAN_DELETE_USERS: "Can remove users from the system",
+    CAN_SEARCH_ORDER: "Can search and view orders",
+    CAN_PLACE_ORDER: "Can create new orders",
+    CAN_CANCEL_ORDER: "Can cancel existing orders",
+    CAN_TRACK_ORDER: "Can track order status",
+    CAN_SCHEDULE_ORDER: "Can schedule orders for later"
 };
 
 export function EditUserForm({ user, onSubmit, isPending = false }: EditUserFormProps) {
@@ -69,6 +93,9 @@ export function EditUserForm({ user, onSubmit, isPending = false }: EditUserForm
         form.setValue("permissions", newPermissions);
     };
 
+    const userPermissions = ALL_PERMISSIONS.filter(p => p.startsWith('CAN_') && p.includes('USER'));
+    const orderPermissions = ALL_PERMISSIONS.filter(p => p.startsWith('CAN_') && p.includes('ORDER'));
+
     return (
         <Card className={dt.cards.default}>
             <CardHeader>
@@ -85,17 +112,17 @@ export function EditUserForm({ user, onSubmit, isPending = false }: EditUserForm
                         <FormField
                             control={form.control}
                             name="firstName"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>First Name</FormLabel>
+                                    <FormLabel className={dt.forms.label}>First Name</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="Enter first name"
-                                            className="focus:border-orange-500 focus:ring-orange-500"
+                                            className={dt.forms.input}
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
@@ -104,17 +131,17 @@ export function EditUserForm({ user, onSubmit, isPending = false }: EditUserForm
                         <FormField
                             control={form.control}
                             name="lastName"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Last Name</FormLabel>
+                                    <FormLabel className={dt.forms.label}>Last Name</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="Enter last name"
-                                            className="focus:border-orange-500 focus:ring-orange-500"
+                                            className={dt.forms.input}
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
@@ -123,68 +150,139 @@ export function EditUserForm({ user, onSubmit, isPending = false }: EditUserForm
                         <FormField
                             control={form.control}
                             name="email"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Email Address</FormLabel>
+                                    <FormLabel className={dt.forms.label}>Email</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
                                             placeholder="Enter email address"
-                                            className="focus:border-orange-500 focus:ring-orange-500"
+                                            className={dt.forms.input}
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
 
-                        {/* Permissions */}
+                        {/* Permissions Section */}
                         <FormField
                             control={form.control}
                             name="permissions"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Permissions</FormLabel>
-                                    <FormControl>
-                                        <div className="grid grid-cols-2 gap-3 p-4 border rounded-lg bg-gray-50">
-                                            {ALL_PERMISSIONS.map((permission) => (
-                                                <label
-                                                    key={permission}
-                                                    className="flex items-center space-x-2 cursor-pointer hover:bg-orange-50 p-2 rounded transition-colors"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={field.value.includes(permission)}
-                                                        onChange={(e) => handlePermissionChange(permission, e.target.checked)}
-                                                        className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">
-                                                        {PERMISSION_LABELS[permission]}
-                                                    </span>
-                                                </label>
-                                            ))}
+                                    <FormLabel className={`${dt.forms.label} ${dt.typography.cardTitle}`}>
+                                        Permissions
+                                    </FormLabel>
+
+                                    <div className={dt.spacing.componentSpacing}>
+
+                                        {/* User Management Permissions */}
+                                        <div className={`p-4 border rounded-lg ${dt.cards.default}`}>
+                                            <h4 className={`${dt.typography.cardTitle} mb-3 text-blue-700`}>
+                                                👥 User Management
+                                            </h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {userPermissions.map((permission) => (
+                                                    <div key={permission} className="flex items-start space-x-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            id={permission}
+                                                            checked={field.value?.includes(permission)}
+                                                            onChange={(e) =>
+                                                                handlePermissionChange(permission, e.target.checked)
+                                                            }
+                                                            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                        />
+                                                        <div className="flex-1">
+                                                            <label
+                                                                htmlFor={permission}
+                                                                className={`${dt.typography.body} font-medium cursor-pointer`}
+                                                            >
+                                                                {PERMISSION_LABELS[permission]}
+                                                            </label>
+                                                            <p className={`${dt.typography.small} text-gray-600 mt-1`}>
+                                                                {PERMISSION_DESCRIPTIONS[permission]}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </FormControl>
-                                    <FormMessage />
+
+                                        {/* Order Management Permissions */}
+                                        <div className={`p-4 border rounded-lg ${dt.cards.default}`}>
+                                            <h4 className={`${dt.typography.cardTitle} mb-3 text-orange-700`}>
+                                                🍽️ Order Management
+                                            </h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {orderPermissions.map((permission) => (
+                                                    <div key={permission} className="flex items-start space-x-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            id={permission}
+                                                            checked={field.value?.includes(permission)}
+                                                            onChange={(e) =>
+                                                                handlePermissionChange(permission, e.target.checked)
+                                                            }
+                                                            className="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                                                        />
+                                                        <div className="flex-1">
+                                                            <label
+                                                                htmlFor={permission}
+                                                                className={`${dt.typography.body} font-medium cursor-pointer`}
+                                                            >
+                                                                {PERMISSION_LABELS[permission]}
+                                                            </label>
+                                                            <p className={`${dt.typography.small} text-gray-600 mt-1`}>
+                                                                {PERMISSION_DESCRIPTIONS[permission]}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Permission Summary */}
+                                        {field.value && field.value.length > 0 && (
+                                            <div className={`p-3 ${dt.cards.info} border rounded-lg`}>
+                                                <p className={`${dt.typography.small} font-medium text-orange-800 mb-2`}>
+                                                    Selected Permissions ({field.value.length}):
+                                                </p>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {field.value.map((permission) => (
+                                                        <span
+                                                            key={permission}
+                                                            className={`px-2 py-1 ${dt.typography.small} bg-orange-200 text-orange-800 rounded-md`}
+                                                        >
+                                                            {PERMISSION_LABELS[permission as Permission]}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                    </div>
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
 
-                        {/* Submit button */}
+                        {/* Submit Button */}
                         <div className="flex gap-3 pt-4">
                             <Button
                                 type="submit"
                                 disabled={isPending}
-                                className="bg-orange-600 hover:bg-orange-700 text-white flex-1"
+                                className={`${dt.buttons.primary} flex-1`}
                             >
                                 {isPending ? (
-                                    <div className="flex items-center gap-2">
-                                        <LoadingSpinner size="sm" />
-                                        <span>Updating...</span>
-                                    </div>
+                                    <>
+                                        <LoadingSpinner size="sm" className="mr-2"/>
+                                        Updating User...
+                                    </>
                                 ) : (
-                                    <span>Update User</span>
+                                    "Update User"
                                 )}
                             </Button>
                         </div>
