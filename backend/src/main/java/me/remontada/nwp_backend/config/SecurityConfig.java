@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(jsonSecurityHandlers) //403
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

@@ -40,8 +40,7 @@ public class ErrorMessageController {
             Authentication authentication) {
 
 
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User currentUser = getCurrentUser(authentication);
 
         Pageable pageable = PageRequest.of(page, size);
         Page<ErrorMessage> errors = errorMessageService.getErrorHistory(currentUser, pageable);
@@ -107,6 +106,11 @@ public class ErrorMessageController {
         return ResponseEntity.ok(response);
     }
 
-
+    private User getCurrentUser(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            throw new RuntimeException("User not authenticated");
+        }
+        return (User) authentication.getPrincipal();
+    }
 
 }

@@ -43,8 +43,7 @@ public class OrderController {
         ;
 
 
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User currentUser = getCurrentUser(authentication);
 
         List<OrderStatus> orderStatuses = null;
         if (status != null && !status.isEmpty()) {
@@ -71,8 +70,8 @@ public class OrderController {
             Authentication authentication) {
 
 
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User currentUser = getCurrentUser(authentication);
+
         Order order = orderService.placeOrder(currentUser, request.getItems());
 
         return ResponseEntity.ok(order);
@@ -87,8 +86,8 @@ public class OrderController {
 
        ;
 
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User currentUser = getCurrentUser(authentication);
+
         Order order = orderService.scheduleOrder(currentUser, request.getItems(), request.getScheduledFor());
 
         return ResponseEntity.ok(order);
@@ -102,8 +101,8 @@ public class OrderController {
             Authentication authentication) {
 
 
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User currentUser = getCurrentUser(authentication);
+
         Order order = orderService.trackOrder(id, currentUser);
 
         return ResponseEntity.ok(order);
@@ -117,8 +116,8 @@ public class OrderController {
             Authentication authentication) {
 
 
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User currentUser = getCurrentUser(authentication);
+
 
         Order order = orderService.cancelOrder(id, currentUser);
 
@@ -126,7 +125,12 @@ public class OrderController {
     }
 
 
-
+    private User getCurrentUser(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            throw new RuntimeException("User not authenticated");
+        }
+        return (User) authentication.getPrincipal();
+    }
 
 
 }

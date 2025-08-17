@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final UserService userService;
@@ -62,6 +62,8 @@ public class AuthController {
         if (auth == null || !(auth.getPrincipal() instanceof User u)) {
             return ResponseEntity.status(401).body(Map.of("message","Unauthorized"));
         }
+
+
         Map<String, Object> body = Map.of(
                 "email", u.getEmail(),
                 "firstName", u.getFirstName(),
