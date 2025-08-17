@@ -10,7 +10,7 @@ import {
     cancelOrder
 } from "@/api/orders";
 import { toastSuccess, toastRequestError } from '@/lib/toast';
-import type { OrderSearchParams } from "@/types/order";
+import type { OrderSearchParams, OrderResponse } from "@/types/order";
 import type {PlaceOrderRequest, ScheduleOrderRequest} from "@/api/request/order";
 
 export function useOrders(
@@ -44,7 +44,6 @@ export function useOrder(orderId: number, enablePolling = false) {
         refetchInterval: enablePolling ? 3000 : false,
     });
 }
-
 
 export function usePlaceOrder() {
     const client = useHttpClient();

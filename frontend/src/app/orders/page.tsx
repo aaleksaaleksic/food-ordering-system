@@ -51,7 +51,6 @@ export default function OrdersPage() {
 
     const { data: orders, isLoading, error, refetch } = useOrders(searchParams, isPollingEnabled, !!me);
 
-
     const form = useForm<SearchFormData>({
         resolver: zodResolver(searchSchema),
         defaultValues: {
@@ -145,111 +144,121 @@ export default function OrdersPage() {
                                 className="flex items-center gap-2"
                             >
                                 <RefreshCcw className={`w-4 h-4 ${isPollingEnabled ? 'animate-spin' : ''}`} />
-                                {isPollingEnabled ? "Live Updates ON" : "Live Updates OFF"}
+                                {isPollingEnabled ? 'Live Updates' : 'Enable Live Updates'}
                             </Button>
                         </div>
                     </div>
 
-                    {/* Search Form */}
-                    <Card className="mb-6">
+                    {/* Search Filters */}
+                    <Card className={dt.cards.default}>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className={`${dt.typography.sectionTitle} flex items-center gap-2`}>
                                 <Search className="w-5 h-5" />
-                                Search Orders
+                                Search & Filter Orders
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
+
+                        <CardContent className={dt.spacing.cardContent}>
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSearch)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <form onSubmit={form.handleSubmit(onSearch)} className="space-y-6">
 
                                     {/* Status Filter */}
                                     <FormField
                                         control={form.control}
                                         name="statusFilter"
-                                        render={({ field }) => (
+                                        render={() => (
                                             <FormItem>
-                                                <FormLabel>Status</FormLabel>
-                                                <div className="space-y-2 max-h-40 overflow-y-auto">
+                                                <FormLabel className={dt.typography.muted}>Filter by Status</FormLabel>
+                                                <div className="flex flex-wrap gap-3">
                                                     {ORDER_STATUSES.map((status) => (
-                                                        <div key={status} className="flex items-center space-x-2">
-                                                            <Checkbox
-                                                                id={status}
-                                                                checked={field.value?.includes(status)}
-                                                                onCheckedChange={(checked) => {
-                                                                    const current = field.value || [];
-                                                                    if (checked) {
-                                                                        field.onChange([...current, status]);
-                                                                    } else {
-                                                                        field.onChange(current.filter(s => s !== status));
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <label htmlFor={status} className="text-sm flex items-center gap-2">
-                                                                <OrderStatusBadge status={status} />
-                                                                {STATUS_LABELS[status]}
-                                                            </label>
-                                                        </div>
+                                                        <FormField
+                                                            key={status}
+                                                            control={form.control}
+                                                            name="statusFilter"
+                                                            render={({ field }) => (
+                                                                <FormItem className="flex items-center space-x-2 space-y-0">
+                                                                    <FormControl>
+                                                                        <Checkbox
+                                                                            checked={field.value?.includes(status)}
+                                                                            onCheckedChange={(checked) => {
+                                                                                const currentValue = field.value || [];
+                                                                                if (checked) {
+                                                                                    field.onChange([...currentValue, status]);
+                                                                                } else {
+                                                                                    field.onChange(currentValue.filter((v) => v !== status));
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                    </FormControl>
+                                                                    <OrderStatusBadge status={status} />
+                                                                </FormItem>
+                                                            )}
+                                                        />
                                                     ))}
                                                 </div>
                                             </FormItem>
                                         )}
                                     />
 
-                                    {/* Date From */}
-                                    <FormField
-                                        control={form.control}
-                                        name="dateFrom"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4" />
-                                                    From Date
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="datetime-local"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
+                                    {/* Date Range */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="dateFrom"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className={`${dt.typography.muted} flex items-center gap-2`}>
+                                                        <Calendar className="w-4 h-4" />
+                                                        From Date
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="datetime-local"
+                                                            className={dt.typography.muted}
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
 
-                                    {/* Date To */}
-                                    <FormField
-                                        control={form.control}
-                                        name="dateTo"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4" />
-                                                    To Date
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="datetime-local"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
+                                        <FormField
+                                            control={form.control}
+                                            name="dateTo"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className={`${dt.typography.muted} flex items-center gap-2`}>
+                                                        <Calendar className="w-4 h-4" />
+                                                        To Date
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="datetime-local"
+                                                            className={dt.typography.muted}
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                                    {/* User ID*/}
+                                    {/* User ID Filter (Admin only) */}
                                     {isAdmin() && (
                                         <FormField
                                             control={form.control}
                                             name="userId"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="flex items-center gap-2">
+                                                    <FormLabel className={`${dt.typography.muted} flex items-center gap-2`}>
                                                         <User className="w-4 h-4" />
-                                                        User ID
+                                                        Filter by User ID (Admin)
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             type="number"
-                                                            placeholder="Enter user ID"
+                                                            placeholder="Enter user ID..."
+                                                            className={dt.typography.muted}
                                                             {...field}
                                                         />
                                                     </FormControl>
@@ -259,12 +268,17 @@ export default function OrdersPage() {
                                     )}
 
                                     {/* Action Buttons */}
-                                    <div className="flex flex-col gap-2 justify-end">
-                                        <Button type="submit" className="w-full">
+                                    <div className="flex items-center gap-3">
+                                        <Button type="submit" className={dt.buttons.primary}>
                                             <Search className="w-4 h-4 mr-2" />
-                                            Search
+                                            Search Orders
                                         </Button>
-                                        <Button type="button" variant="outline" onClick={clearFilters} className="w-full">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={clearFilters}
+                                            className={dt.buttons.secondary}
+                                        >
                                             Clear Filters
                                         </Button>
                                     </div>
@@ -276,14 +290,14 @@ export default function OrdersPage() {
 
                     {/* Orders Table */}
                     {isLoading ? (
-                        <div className="flex justify-center py-12">
-                            <LoadingSpinner size="lg" />
-                        </div>
+                        <Card className={dt.cards.default}>
+                            <CardContent className={`${dt.spacing.cardContent} flex items-center justify-center py-12`}>
+                                <LoadingSpinner size="lg" />
+                                <span className="ml-3 text-gray-600">Loading orders...</span>
+                            </CardContent>
+                        </Card>
                     ) : (
-                        <OrdersTable
-                            orders={orders || []}
-                            isPollingEnabled={isPollingEnabled}
-                        />
+                        <OrdersTable orders={orders || []} isPollingEnabled={isPollingEnabled} />
                     )}
 
                 </div>

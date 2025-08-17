@@ -15,10 +15,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { dt } from "@/lib/design-tokens";
-import type { Order } from "@/types/order";
+import type { OrderResponse } from "@/types/order";
 
 interface OrdersTableProps {
-    orders: Order[];
+    orders: OrderResponse[];
     isPollingEnabled?: boolean;
 }
 
@@ -26,7 +26,7 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
     const router = useRouter();
     const { isAdmin, can } = useCan();
     const cancelOrderMutation = useCancelOrder();
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null); // ← AŽURIRAJ TIP
 
     const handleViewOrder = (orderId: number) => {
         if (can("CAN_TRACK_ORDER")) {
@@ -43,7 +43,7 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
         }
     };
 
-    const canCancelOrder = (order: Order) => {
+    const canCancelOrder = (order: OrderResponse) => { // ← AŽURIRAJ TIP
         return can("CAN_CANCEL_ORDER") &&
             order.status === "ORDERED" &&
             order.active;
@@ -56,10 +56,11 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
         }).format(amount);
     };
 
-    const calculateOrderTotal = (order: Order) => {
-        return order.items.reduce((total, item) => {
-            return total + (item.priceAtTime * item.quantity);
-        }, 0);
+
+    const calculateOrderTotal = (order: OrderResponse) => {
+        return order.items?.reduce((total, item) => {
+            return total + item.totalPrice; // ← Koristi computed totalPrice field
+        }, 0) ?? 0;
     };
 
     if (orders.length === 0) {
@@ -140,7 +141,7 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
                                                 onClick={() => setSelectedOrder(order)}
                                                 className={`${dt.colors.primary} hover:text-orange-800 underline flex items-center gap-1`}
                                             >
-                                                {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                                                {order.totalItems || order.items?.length || 0} item{(order.totalItems || order.items?.length || 0) !== 1 ? 's' : ''}
                                                 <Eye className="w-3 h-3" />
                                             </button>
                                         </TableCell>
@@ -150,14 +151,14 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
                                             {formatCurrency(calculateOrderTotal(order))}
                                         </TableCell>
 
-                                        {/* Customer  */}
+                                        {/* Customer */}
                                         {isAdmin() && (
                                             <TableCell className={dt.tables.cell}>
                                                 <div className="flex items-center gap-2">
                                                     <User className="w-4 h-4 text-gray-400" />
                                                     <div className={dt.typography.small}>
                                                         <div className="font-medium">
-                                                            {order.createdBy.firstName} {order.createdBy.lastName}
+                                                            {order.createdBy.fullName || `${order.createdBy.firstName} ${order.createdBy.lastName}`}
                                                         </div>
                                                         <div className={dt.typography.muted}>
                                                             {order.createdBy.email}
@@ -184,56 +185,46 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
                                         <TableCell className={dt.tables.cell}>
                                             {order.scheduledFor ? (
                                                 <div className={`flex items-center gap-2 ${dt.typography.small}`}>
-                                                    <Clock className={`w-4 h-4 text-${dt.colors.primary}`} />
+                                                    <Clock className="w-4 h-4 text-blue-400" />
                                                     <div>
                                                         <div>{format(new Date(order.scheduledFor), 'MMM dd, yyyy')}</div>
-                                                        <div className={`text-${dt.colors.primary} font-medium`}>
+                                                        <div className={dt.typography.muted}>
                                                             {format(new Date(order.scheduledFor), 'HH:mm')}
                                                         </div>
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <span className={`${dt.typography.muted} ${dt.typography.small}`}>
-                                                    Immediate
-                                                </span>
+                                                <span className={dt.typography.muted}>—</span>
                                             )}
                                         </TableCell>
 
                                         {/* Actions */}
                                         <TableCell className={`${dt.tables.cell} text-right`}>
                                             <div className="flex items-center justify-end gap-2">
-                                                {/* View/Track Order */}
                                                 {can("CAN_TRACK_ORDER") && (
                                                     <Button
+                                                        variant="ghost"
                                                         size="sm"
-                                                        variant="outline"
                                                         onClick={() => handleViewOrder(order.id)}
-                                                        className={`${dt.buttons.outline} flex items-center gap-1`}
+                                                        className={dt.buttons.ghost}
                                                     >
                                                         <Eye className="w-4 h-4" />
-                                                        View
                                                     </Button>
                                                 )}
 
-                                                {/* Cancel Order */}
                                                 {canCancelOrder(order) && (
                                                     <Button
+                                                        variant="ghost"
                                                         size="sm"
-                                                        variant="destructive"
                                                         onClick={() => handleCancelOrder(order.id)}
                                                         disabled={cancelOrderMutation.isPending}
-                                                        className={`
-                                                            ${dt.buttons.destructive} 
-                                                            flex items-center gap-1
-                                                            ${cancelOrderMutation.isPending ? dt.loading.fade : ''}
-                                                        `}
+                                                        className="text-red-600 hover:text-red-800 hover:bg-red-50"
                                                     >
                                                         {cancelOrderMutation.isPending ? (
                                                             <LoadingSpinner size="sm" />
                                                         ) : (
                                                             <X className="w-4 h-4" />
                                                         )}
-                                                        Cancel
                                                     </Button>
                                                 )}
                                             </div>
@@ -246,7 +237,7 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
                 </CardContent>
             </Card>
 
-            {/* Order Items Dialog */}
+            {/* Items Dialog */}
             {selectedOrder && (
                 <OrderItemsDialog
                     order={selectedOrder}
