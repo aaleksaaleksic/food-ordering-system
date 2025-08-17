@@ -1,7 +1,7 @@
 package me.remontada.nwp_backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import me.remontada.nwp_backend.dto.CleanupResponse;
+import me.remontada.nwp_backend.dto.response.CleanupResponse;
 import me.remontada.nwp_backend.model.ErrorMessage;
 import me.remontada.nwp_backend.model.User;
 import me.remontada.nwp_backend.service.ErrorMessageService;

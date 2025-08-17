@@ -1,4 +1,4 @@
-package me.remontada.nwp_backend.dto;
+package me.remontada.nwp_backend.dto.response;
 import lombok.*;
 
 @Data

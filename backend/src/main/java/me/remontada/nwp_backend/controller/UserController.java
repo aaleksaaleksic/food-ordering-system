@@ -2,7 +2,7 @@ package me.remontada.nwp_backend.controller;
 
 import jakarta.validation.Valid;
 import me.remontada.nwp_backend.dto.UserRequest;
-import me.remontada.nwp_backend.dto.UserResponse;
+import me.remontada.nwp_backend.dto.response.UserResponse;
 import me.remontada.nwp_backend.exception.EmailAlreadyUsedException;
 import me.remontada.nwp_backend.model.User;
 import me.remontada.nwp_backend.service.UserService;

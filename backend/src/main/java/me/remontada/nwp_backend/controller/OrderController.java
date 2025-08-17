@@ -3,6 +3,8 @@ package me.remontada.nwp_backend.controller;
 import lombok.extern.slf4j.Slf4j;
 import me.remontada.nwp_backend.dto.PlaceOrderRequest;
 import me.remontada.nwp_backend.dto.ScheduleOrderRequest;
+import me.remontada.nwp_backend.dto.response.OrderResponseDTO;
+import me.remontada.nwp_backend.mapper.OrderMapper;
 import me.remontada.nwp_backend.model.Order;
 import me.remontada.nwp_backend.model.OrderStatus;
 import me.remontada.nwp_backend.model.User;
@@ -32,6 +34,9 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OrderMapper orderMapper;
+
     private User getCurrentUser(Authentication authentication) {
         if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
             throw new RuntimeException("User not authenticated");
@@ -42,7 +47,7 @@ public class OrderController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('CAN_SEARCH_ORDER')")
-    public ResponseEntity<List<Order>> searchOrders(
+    public ResponseEntity<List<OrderResponseDTO>> searchOrders(
             @RequestParam(required = false) List<String> status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo,
@@ -67,13 +72,14 @@ public class OrderController {
         }
 
         List<Order> orders = orderService.searchOrders(currentUser, orderStatuses, dateFrom, dateTo, userId);
-        return ResponseEntity.ok(orders);
+        List<OrderResponseDTO> orderDTOs = orderMapper.toResponseDTOs(orders);
+        return ResponseEntity.ok(orderDTOs);
     }
 
 
     @PostMapping
     @PreAuthorize("hasAuthority('CAN_PLACE_ORDER')")
-    public ResponseEntity<Order> placeOrder(
+    public ResponseEntity<OrderResponseDTO> placeOrder(
             @Valid @RequestBody PlaceOrderRequest request,
             Authentication authentication) {
 
@@ -81,14 +87,15 @@ public class OrderController {
         User currentUser = getCurrentUser(authentication);
 
         Order order = orderService.placeOrder(currentUser, request.getItems());
+        OrderResponseDTO orderDTO = orderMapper.toResponseDTO(order);
 
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderDTO);
     }
 
 
     @PostMapping("/schedule")
     @PreAuthorize("hasAuthority('CAN_SCHEDULE_ORDER')")
-    public ResponseEntity<Order> scheduleOrder(
+    public ResponseEntity<OrderResponseDTO> scheduleOrder(
             @Valid @RequestBody ScheduleOrderRequest request,
             Authentication authentication) {
 
@@ -98,13 +105,15 @@ public class OrderController {
 
         Order order = orderService.scheduleOrder(currentUser, request.getItems(), request.getScheduledFor());
 
-        return ResponseEntity.ok(order);
+        OrderResponseDTO orderResponseDTO = orderMapper.toResponseDTO(order);
+
+        return ResponseEntity.ok(orderResponseDTO);
     }
 
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('CAN_TRACK_ORDER')")
-    public ResponseEntity<Order> trackOrder(
+    public ResponseEntity<OrderResponseDTO> trackOrder(
             @PathVariable Long id,
             Authentication authentication) {
 
@@ -113,13 +122,15 @@ public class OrderController {
 
         Order order = orderService.trackOrder(id, currentUser);
 
-        return ResponseEntity.ok(order);
+        OrderResponseDTO orderDTO = orderMapper.toResponseDTO(order);
+
+        return ResponseEntity.ok(orderDTO);
     }
 
 
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('CAN_CANCEL_ORDER')")
-    public ResponseEntity<Order> cancelOrder(
+    public ResponseEntity<OrderResponseDTO> cancelOrder(
             @PathVariable Long id,
             Authentication authentication) {
 
@@ -129,7 +140,9 @@ public class OrderController {
 
         Order order = orderService.cancelOrder(id, currentUser);
 
-        return ResponseEntity.ok(order);
+        OrderResponseDTO orderDTO = orderMapper.toResponseDTO(order);
+
+        return ResponseEntity.ok(orderDTO);
     }
 
 

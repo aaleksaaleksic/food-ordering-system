@@ -1,7 +1,7 @@
 package me.remontada.nwp_backend.controller;
 
 import jakarta.validation.Valid;
-import me.remontada.nwp_backend.dto.AuthResponse;
+import me.remontada.nwp_backend.dto.response.AuthResponse;
 import me.remontada.nwp_backend.dto.LoginRequest;
 import me.remontada.nwp_backend.model.User;
 import me.remontada.nwp_backend.service.UserService;

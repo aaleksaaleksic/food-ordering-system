@@ -1,19 +1,17 @@
-package me.remontada.nwp_backend.dto;
+package me.remontada.nwp_backend.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import me.remontada.nwp_backend.model.Permission;
+import lombok.NoArgsConstructor;
 
-import java.util.Set;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
-
+public class UserSimpleDTO {
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
-    private Set<Permission> permissions;
-
+    private String fullName;  // firstName + lastName
 }
