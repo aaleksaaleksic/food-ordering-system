@@ -3,18 +3,18 @@ import type { UserDto } from "@/types/user";
 
 
 export const getAllUsers = (client: AxiosInstance) =>
-    client.get<UserDto[]>("/users");
+    client.get<UserDto[]>("/v1/users");
 
 
 export const deleteUser = (client: AxiosInstance, id: number) =>
-    client.delete(`/users/${id}`);
+    client.delete(`/v1/users/${id}`);
 
 
 export const createUser = (client: AxiosInstance, data: any) =>
-    client.post<UserDto>("/users", data);
+    client.post<UserDto>("/v1/users", data);
 
 export const updateUser = (client: AxiosInstance, id: number, data: any) =>
-    client.put<UserDto>(`/users/${id}`, data);
+    client.put<UserDto>(`/v1/users/${id}`, data);
 
 export const getUserById = (client: AxiosInstance, id: number) =>
-    client.get<UserDto>(`/users/${id}`);
+    client.get<UserDto>(`/v1/users/${id}`);

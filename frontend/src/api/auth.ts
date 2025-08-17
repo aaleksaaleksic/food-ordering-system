@@ -4,6 +4,6 @@ import type { AuthResponse } from "./response/auth";
 import {MeDto} from "@/api/response/me";
 
 export const login = (client: AxiosInstance, body: LoginRequest) =>
-    client.post<AuthResponse>("/auth/login", body);
+    client.post<AuthResponse>("/v1/auth/login", body);
 
-export const me = (client: AxiosInstance) => client.get<MeDto>("/auth/me");
+export const me = (client: AxiosInstance) => client.get<MeDto>("v1/auth/me");
