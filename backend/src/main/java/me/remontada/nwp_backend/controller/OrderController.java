@@ -25,11 +25,19 @@ import java.util.List;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
+
     @Autowired
     private OrderService orderService;
 
     @Autowired
     private UserService userService;
+
+    private User getCurrentUser(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            throw new RuntimeException("User not authenticated");
+        }
+        return (User) authentication.getPrincipal();
+    }
 
 
     @GetMapping
@@ -125,12 +133,7 @@ public class OrderController {
     }
 
 
-    private User getCurrentUser(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
-            throw new RuntimeException("User not authenticated");
-        }
-        return (User) authentication.getPrincipal();
-    }
+
 
 
 }

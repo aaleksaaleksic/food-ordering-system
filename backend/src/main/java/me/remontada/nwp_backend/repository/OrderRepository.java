@@ -27,7 +27,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE o.createdBy.id = :userId " +
             "AND (:statuses IS NULL OR o.status IN :statuses) " +
-            "AND (:dateFrom IS NULL OR :dateTo IS NULL OR o.createdAt BETWEEN :dateFrom AND :dateTo) " +
+            "AND (:dateFrom IS NULL OR o.createdAt >= :dateFrom) " +
+            "AND (:dateTo IS NULL OR o.createdAt <= :dateTo) " +
             "ORDER BY o.createdAt DESC")
     List<Order> searchUserOrders(@Param("userId") Long userId,
                                  @Param("statuses") List<OrderStatus> statuses,
@@ -38,7 +39,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE " +
             "(:userId IS NULL OR o.createdBy.id = :userId) " +
             "AND (:statuses IS NULL OR o.status IN :statuses) " +
-            "AND (:dateFrom IS NULL OR :dateTo IS NULL OR o.createdAt BETWEEN :dateFrom AND :dateTo) " +
+            "AND (:dateFrom IS NULL OR o.createdAt >= :dateFrom) " +
+            "AND (:dateTo IS NULL OR o.createdAt <= :dateTo) " +
             "ORDER BY o.createdAt DESC")
     List<Order> searchAllOrders(@Param("userId") Long userId,
                                 @Param("statuses") List<OrderStatus> statuses,

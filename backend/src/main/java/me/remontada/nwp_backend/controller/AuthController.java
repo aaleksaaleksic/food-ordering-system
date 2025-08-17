@@ -59,16 +59,17 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
-        if (auth == null || !(auth.getPrincipal() instanceof User u)) {
+        if (auth == null || !(auth.getPrincipal() instanceof User)) {
             return ResponseEntity.status(401).body(Map.of("message","Unauthorized"));
         }
 
+        User user = (User) auth.getPrincipal();
 
         Map<String, Object> body = Map.of(
-                "email", u.getEmail(),
-                "firstName", u.getFirstName(),
-                "lastName", u.getLastName(),
-                "permissions", u.getPermissions()
+                "email", user.getEmail(),
+                "firstName", user.getFirstName(),
+                "lastName", user.getLastName(),
+                "permissions", user.getPermissions()
         );
         return ResponseEntity.ok(body);
     }
