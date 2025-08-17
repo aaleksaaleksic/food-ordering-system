@@ -113,7 +113,7 @@ public class DataSeeder implements ApplicationRunner {
         noPermUser.setLastName("User");
         noPermUser.setEmail("noperm@test.com");
         noPermUser.setPassword(passwordEncoder.encode("noperm123"));
-        noPermUser.setPermissions(Set.of()); // Nema permissions!
+        noPermUser.setPermissions(Set.of());
         userRepository.save(noPermUser);
     }
 
@@ -127,7 +127,7 @@ public class DataSeeder implements ApplicationRunner {
         dishRepository.save(createDish("Quattro Stagioni", "Four seasons pizza with mushrooms, artichokes, ham, and olives",
                 new BigDecimal("1600.00"), "Pizza", true));
         dishRepository.save(createDish("Hawaiian Pizza", "Ham and pineapple with mozzarella (controversial but delicious)",
-                new BigDecimal("1350.00"), "Pizza", false)); // Out of stock!
+                new BigDecimal("1350.00"), "Pizza", false));
 
         // BURGERS
         dishRepository.save(createDish("Classic Cheeseburger", "Beef patty with cheddar cheese, lettuce, tomato, and onion",
@@ -151,7 +151,7 @@ public class DataSeeder implements ApplicationRunner {
         dishRepository.save(createDish("Penne Arrabbiata", "Spicy tomato sauce with garlic and red pepper",
                 new BigDecimal("950.00"), "Pasta", true));
         dishRepository.save(createDish("Fettuccine Alfredo", "Creamy white sauce with parmesan cheese",
-                new BigDecimal("1050.00"), "Pasta", false)); // Temporarily unavailable
+                new BigDecimal("1050.00"), "Pasta", false));
 
         // DESSERTS
         dishRepository.save(createDish("Tiramisu", "Classic Italian dessert with coffee and mascarpone",
