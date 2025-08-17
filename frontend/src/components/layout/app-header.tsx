@@ -104,7 +104,7 @@ export function AppHeader() {
                             <ShoppingCart className="w-5 h-5 text-white" />
                         </div>
                         <span className={`${dt.typography.sectionTitle} text-gray-900`}>
-                            Food Ordering
+                            Tasty
                         </span>
                     </Link>
 

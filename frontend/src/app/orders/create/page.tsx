@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { dt } from "@/lib/design-tokens";
 import type { Dish } from "@/types/order";
 import {OrderItemRequest} from "@/api/request/order";
+import {formatSerbianDate} from "@/utils/date";
 
 const scheduleSchema = z.object({
     scheduledFor: z.string().min(1, "Please select a date and time"),
@@ -135,14 +136,23 @@ export default function CreateOrderPage() {
         }));
 
         try {
+            const scheduledDateTime = new Date(data.scheduledFor);
+            const serbianFormat = formatSerbianDate(scheduledDateTime);
+
+            console.log('Original input:', data.scheduledFor);
+            console.log('Sending to backend (Serbian format):', serbianFormat);
+
             await scheduleOrderMutation.mutateAsync({
                 items: orderItems,
-                scheduledFor: new Date(data.scheduledFor).toISOString(),
+                scheduledFor: serbianFormat,
             });
+
             clearCart();
+            setIsScheduleMode(false);
+            scheduleForm.reset();
             router.push("/orders");
         } catch (error) {
-            // Error handled in hook
+            console.error('Schedule order error:', error);
         }
     };
 

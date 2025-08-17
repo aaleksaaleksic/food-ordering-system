@@ -44,8 +44,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> searchOrders(User user, List<OrderStatus> statuses,
                                     LocalDateTime dateFrom, LocalDateTime dateTo, Long userId) {
-        log.info("Searching orders for user: {}, statuses: {}, dateFrom: {}, dateTo: {}, userId: {}",
-                user.getId(), statuses, dateFrom, dateTo, userId);
+
 
         boolean isAdmin = PermissionUtils.isAdmin(user);
 
@@ -58,7 +57,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order placeOrder(User user, List<OrderItemRequest> orderItems) {
-        log.info("Placing order for user: {} with {} items", user.getId(), orderItems.size());
 
         if (!canCreateNewOrder()) {
             String errorMsg = "Maximum number of simultaneous orders (3) exceeded";
@@ -80,7 +78,6 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        log.info("Order {} created successfully for user {}", savedOrder.getId(), user.getId());
 
         scheduleStatusTransition(savedOrder.getId(), OrderStatus.PREPARING, 10);
 
@@ -113,29 +110,28 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order cancelOrder(Long orderId, User user) {
-
         Order order = orderRepository.findCancellableOrder(orderId, OrderStatus.ORDERED);
         if (order == null) {
             throw new RuntimeException("Order not found or cannot be canceled");
         }
 
-        boolean hasPermission = PermissionUtils.hasPermission(user,Permission.CAN_CANCEL_ORDER);
-        if (!(order.getCreatedBy().getId() == (user.getId()) && !hasPermission)) {
-            throw new RuntimeException("You can't cancel your order");
+        boolean isAdmin = PermissionUtils.isAdmin(user);
+        boolean isOwner = order.getCreatedBy().getId().equals(user.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new RuntimeException("You can only cancel your own orders");
         }
 
         order.setStatus(OrderStatus.CANCELED);
         order.setActive(false);
 
         Order savedOrder = orderRepository.save(order);
-        log.info("Order {} canceled successfully", orderId);
 
         return savedOrder;
     }
 
     @Override
     public Order trackOrder(Long orderId, User user) {
-
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
             throw new RuntimeException("Order not found");
@@ -144,7 +140,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderOpt.get();
 
         boolean isAdmin = PermissionUtils.isAdmin(user);
-        if (!(order.getCreatedBy().getId() == (user.getId()) && !isAdmin)) {
+        boolean isOwner = order.getCreatedBy().getId().equals(user.getId());
+
+        if (!isAdmin && !isOwner) {
             throw new RuntimeException("You can only track your own orders");
         }
 
@@ -204,7 +202,6 @@ public class OrderServiceImpl implements OrderService {
                     transition.setProcessed(true);
                     transitionRepository.save(transition);
 
-                    log.info("Order {} status changed to {}", order.getId(), transition.getTargetStatus());
 
                     OrderStatus nextStatus = getNextStatus(transition.getTargetStatus());
                     if (nextStatus != null) {
@@ -213,7 +210,6 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
             } catch (Exception e) {
-                log.error("Error processing status transition {}: {}", transition.getId(), e.getMessage());
             }
         }
     }

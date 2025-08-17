@@ -19,7 +19,7 @@ export default function LoginPage() {
 
     useEffect(() => {
         if (me && isLoaded()) {
-            router.push('/users');
+            router.push('/orders');
         }
     }, [me, isLoaded, router]);
 

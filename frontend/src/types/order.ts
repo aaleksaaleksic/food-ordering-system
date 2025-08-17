@@ -20,6 +20,7 @@ export interface DishSimple {
     description?: string;
     price: number;
     category: string;
+    available?: boolean;
 }
 
 

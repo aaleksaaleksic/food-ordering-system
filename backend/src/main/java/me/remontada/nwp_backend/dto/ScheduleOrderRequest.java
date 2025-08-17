@@ -1,5 +1,6 @@
 package me.remontada.nwp_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 
 import jakarta.validation.constraints.Future;
@@ -24,6 +25,7 @@ public class ScheduleOrderRequest {
 
     @NotNull(message = "Scheduled time is required")
     @Future(message = "Scheduled time must be in the future")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime scheduledFor;
 
 }

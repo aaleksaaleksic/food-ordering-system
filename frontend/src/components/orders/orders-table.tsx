@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { dt } from "@/lib/design-tokens";
 import type { OrderResponse } from "@/types/order";
+import {formatSerbianDateOnly, formatSerbianTimeOnly} from "@/utils/date";
 
 interface OrdersTableProps {
     orders: OrderResponse[];
@@ -173,9 +174,9 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
                                             <div className={`flex items-center gap-2 ${dt.typography.small}`}>
                                                 <Calendar className="w-4 h-4 text-gray-400" />
                                                 <div>
-                                                    <div>{format(new Date(order.createdAt), 'MMM dd, yyyy')}</div>
+                                                    <div>{formatSerbianDateOnly(order.createdAt)}</div>
                                                     <div className={dt.typography.muted}>
-                                                        {format(new Date(order.createdAt), 'HH:mm')}
+                                                        {formatSerbianTimeOnly(order.createdAt)}
                                                     </div>
                                                 </div>
                                             </div>

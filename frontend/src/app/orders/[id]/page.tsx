@@ -1,10 +1,9 @@
 "use client";
 
 import { use } from "react";
-import { format } from "date-fns";
 import { ArrowLeft, Package, Clock, User, Calendar, X, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { Order, OrderItem } from "@/types/order";
+import type { OrderItemResponse } from "@/types/order";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { OrderStatusBadge } from "@/components/orders/order-status-badge";
@@ -17,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { dt } from "@/lib/design-tokens";
+import {formatSerbianDateOnly, formatSerbianTimeOnly} from "@/utils/date";
 
 interface OrderDetailPageProps {
     params: Promise<{ id: string }>;
@@ -46,7 +46,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     const calculateOrderTotal = () =>
         (order?.items ?? []).reduce((sum, it) => sum + it.priceAtTime * it.quantity, 0);
 
-    const calculateSubtotal = (item: OrderItem) => item.priceAtTime * item.quantity;
+    const calculateSubtotal = (item: OrderItemResponse) => item.priceAtTime * item.quantity; // ← Umesto OrderItem
 
     const canCancelOrder = () => {
         return order &&
@@ -225,7 +225,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                                         <Badge variant="outline">
                                                             {item.dish.category}
                                                         </Badge>
-                                                        {!item.dish.available && (
+                                                        {item.dish.available === false && (
                                                             <Badge variant="destructive">
                                                                 Currently Unavailable
                                                             </Badge>
@@ -298,15 +298,16 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                                         {/* Order Date */}
                                         <div>
-                                            <div className={`flex items-center gap-2 ${dt.typography.small} text-gray-600 mb-1`}>
-                                                <Calendar className="w-4 h-4" />
+                                            <div
+                                                className={`flex items-center gap-2 ${dt.typography.small} text-gray-600 mb-1`}>
+                                                <Calendar className="w-4 h-4"/>
                                                 Order Date
                                             </div>
                                             <div className="font-medium">
-                                                {format(new Date(order.createdAt), 'PPP')}
+                                                {formatSerbianDateOnly(order.createdAt)}
                                             </div>
                                             <div className={dt.typography.small}>
-                                                {format(new Date(order.createdAt), 'p')}
+                                                {formatSerbianTimeOnly(order.createdAt)}
                                             </div>
                                         </div>
 
@@ -318,10 +319,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                                     Scheduled For
                                                 </div>
                                                 <div className="font-medium">
-                                                    {format(new Date(order.scheduledFor), 'PPP')}
+                                                    {formatSerbianDateOnly(order.scheduledFor)}
                                                 </div>
                                                 <div className={`${dt.typography.small} text-${dt.colors.primary} font-medium`}>
-                                                    {format(new Date(order.scheduledFor), 'p')}
+                                                    {formatSerbianTimeOnly(order.scheduledFor)}
                                                 </div>
                                             </div>
                                         )}

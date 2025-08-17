@@ -137,15 +137,15 @@ export default function OrdersPage() {
 
                         {/* Real-time toggle */}
                         <div className="flex items-center gap-4">
-                            <Button
-                                variant={isPollingEnabled ? "default" : "outline"}
-                                size="sm"
-                                onClick={togglePolling}
-                                className="flex items-center gap-2"
-                            >
-                                <RefreshCcw className={`w-4 h-4 ${isPollingEnabled ? 'animate-spin' : ''}`} />
-                                {isPollingEnabled ? 'Live Updates' : 'Enable Live Updates'}
-                            </Button>
+                            {/*<Button*/}
+                            {/*    variant={isPollingEnabled ? "default" : "outline"}*/}
+                            {/*    size="sm"*/}
+                            {/*    onClick={togglePolling}*/}
+                            {/*    className="flex items-center gap-2"*/}
+                            {/*>*/}
+                            {/*    <RefreshCcw className={`w-4 h-4 ${isPollingEnabled ? 'animate-spin' : ''}`} />*/}
+                            {/*    {isPollingEnabled ? 'Live Updates' : 'Enable Live Updates'}*/}
+                            {/*</Button>*/}
                         </div>
                     </div>
 
