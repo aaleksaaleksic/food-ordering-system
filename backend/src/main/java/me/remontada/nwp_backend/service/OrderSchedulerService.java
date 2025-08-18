@@ -16,14 +16,12 @@ public class OrderSchedulerService {
 
     @Scheduled(fixedDelay = 60000)
     public void processScheduledOrders() {
-        log.debug("Processing scheduled orders...");
         orderService.processScheduledOrders();
     }
 
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 5000)
     public void processStatusTransitions() {
-        log.debug("Processing order status transitions...");
         orderService.processStatusTransitions();
     }
 }
