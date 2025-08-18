@@ -51,8 +51,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     const canCancelOrder = () => {
         return order &&
             can("CAN_CANCEL_ORDER") &&
-            order.status === "ORDERED" &&
-            order.active;
+            order.status === "ORDERED";
     };
 
     const handleCancelOrder = async () => {

@@ -144,7 +144,6 @@ export default function ErrorHistoryPage() {
                                                 <TableHead>Timestamp</TableHead>
                                                 <TableHead>Operation</TableHead>
                                                 <TableHead>Error Message</TableHead>
-                                                <TableHead>Order ID</TableHead>
                                                 {isAdmin() && <TableHead>User</TableHead>}
                                             </TableRow>
                                         </TableHeader>
@@ -172,16 +171,6 @@ export default function ErrorHistoryPage() {
                                                                 {error.errorMessage}
                                                             </p>
                                                         </div>
-                                                    </TableCell>
-
-                                                    <TableCell className={dt.tables.cell}>
-                                                        {error.orderId ? (
-                                                            <Badge variant="outline">
-                                                                #{error.orderId}
-                                                            </Badge>
-                                                        ) : (
-                                                            <span className={dt.typography.muted}>—</span>
-                                                        )}
                                                     </TableCell>
 
                                                     {isAdmin() && (

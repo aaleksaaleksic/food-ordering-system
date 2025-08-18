@@ -44,10 +44,9 @@ export function OrdersTable({ orders, isPollingEnabled = false }: OrdersTablePro
         }
     };
 
-    const canCancelOrder = (order: OrderResponse) => { // ← AŽURIRAJ TIP
+    const canCancelOrder = (order: OrderResponse) => {
         return can("CAN_CANCEL_ORDER") &&
-            order.status === "ORDERED" &&
-            order.active;
+            order.status === "ORDERED";
     };
 
     const formatCurrency = (amount: number) => {
