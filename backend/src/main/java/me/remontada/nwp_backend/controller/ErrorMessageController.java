@@ -2,6 +2,8 @@ package me.remontada.nwp_backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import me.remontada.nwp_backend.dto.response.CleanupResponse;
+import me.remontada.nwp_backend.dto.response.ErrorMessageResponseDTO;
+import me.remontada.nwp_backend.mapper.ErrorMessageMapper;
 import me.remontada.nwp_backend.model.ErrorMessage;
 import me.remontada.nwp_backend.model.User;
 import me.remontada.nwp_backend.service.ErrorMessageService;
@@ -31,10 +33,13 @@ public class ErrorMessageController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ErrorMessageMapper errorMessageMapper;
+
 
     @GetMapping
     @PreAuthorize("hasAuthority('CAN_SEARCH_ORDER')")
-    public ResponseEntity<Page<ErrorMessage>> getErrorHistory(
+    public ResponseEntity<Page<ErrorMessageResponseDTO>> getErrorHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Authentication authentication) {
@@ -45,30 +50,36 @@ public class ErrorMessageController {
         Pageable pageable = PageRequest.of(page, size);
         Page<ErrorMessage> errors = errorMessageService.getErrorHistory(currentUser, pageable);
 
-        return ResponseEntity.ok(errors);
+        Page<ErrorMessageResponseDTO> errorDTOs = errors.map(errorMessageMapper::toResponseDTO);
+
+
+        return ResponseEntity.ok(errorDTOs);
     }
 
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('CAN_READ_USERS')")
-    public ResponseEntity<Page<ErrorMessage>> getAllErrors(
+    public ResponseEntity<Page<ErrorMessageResponseDTO>> getAllErrors(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
 
         Pageable pageable = PageRequest.of(page, size);
         Page<ErrorMessage> errors = errorMessageService.getAllErrors(pageable);
+        Page<ErrorMessageResponseDTO> errorDTOs = errors.map(errorMessageMapper::toResponseDTO);
 
-        return ResponseEntity.ok(errors);
+
+        return ResponseEntity.ok(errorDTOs);
     }
 
 
     @GetMapping("/operation/{operation}")
     @PreAuthorize("hasAuthority('CAN_READ_USERS')")
-    public ResponseEntity<List<ErrorMessage>> getErrorsByOperation(@PathVariable String operation) {
+    public ResponseEntity<List<ErrorMessageResponseDTO>> getErrorsByOperation(@PathVariable String operation) {
 
         List<ErrorMessage> errors = errorMessageService.getErrorsByOperation(operation);
-        return ResponseEntity.ok(errors);
+        List<ErrorMessageResponseDTO> errorDTOs = errorMessageMapper.toResponseDTOs(errors);
+        return ResponseEntity.ok(errorDTOs);
     }
 
 
