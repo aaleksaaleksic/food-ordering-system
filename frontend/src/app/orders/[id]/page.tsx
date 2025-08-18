@@ -225,11 +225,6 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                                         <Badge variant="outline">
                                                             {item.dish.category}
                                                         </Badge>
-                                                        {item.dish.available === false && (
-                                                            <Badge variant="destructive">
-                                                                Currently Unavailable
-                                                            </Badge>
-                                                        )}
                                                     </div>
                                                 </div>
 
