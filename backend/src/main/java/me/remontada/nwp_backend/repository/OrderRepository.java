@@ -54,6 +54,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                                                       @Param("status") OrderStatus status);
 
 
-    @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.status = :status AND o.active = true")
+    @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.status = :status")
     Order findCancellableOrder(@Param("orderId") Long orderId, @Param("status") OrderStatus status);
 }

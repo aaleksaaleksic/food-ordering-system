@@ -28,6 +28,9 @@ public class DataSeeder implements ApplicationRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
@@ -258,5 +261,7 @@ public class DataSeeder implements ApplicationRunner {
         item.setDish(dish);
         item.setQuantity(quantity);
         item.setPriceAtTime(dish.getPrice());
+
+        orderItemRepository.save(item);
     }
 }

@@ -46,7 +46,7 @@ public class Order {
 
 
     public boolean canBeCanceled() {
-        return status == OrderStatus.ORDERED && active;
+        return status == OrderStatus.ORDERED;
     }
 
 

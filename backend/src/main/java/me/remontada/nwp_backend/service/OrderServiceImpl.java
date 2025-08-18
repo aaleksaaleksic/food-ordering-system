@@ -125,7 +125,12 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CANCELED);
         order.setActive(false);
 
+
         Order savedOrder = orderRepository.save(order);
+        transitionRepository.deleteByOrderId(savedOrder.getId());
+
+
+
         ErrorMessage error = ErrorMessage.forCancelOrder(orderId,user, "You canceled this order");
         errorMessageService.logCancelError(user,error.getErrorMessage(), error.getOperation());
 
@@ -226,7 +231,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderOpt.get();
             OrderStatus nextStatus = getNextStatus(order.getStatus());
 
-            if (nextStatus != null) {
+            if (nextStatus != null && nextStatus != OrderStatus.CANCELED) {
                 order.setStatus(nextStatus);
                 orderRepository.save(order);
 
@@ -260,6 +265,7 @@ public class OrderServiceImpl implements OrderService {
             case ORDERED -> OrderStatus.PREPARING;
             case PREPARING -> OrderStatus.IN_DELIVERY;
             case IN_DELIVERY -> OrderStatus.DELIVERED;
+            case CANCELED -> OrderStatus.CANCELED;
             default -> null;
         };
     }
