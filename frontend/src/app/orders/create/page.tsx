@@ -11,7 +11,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { DishCard } from "@/components/orders/dish-card";
 import { OrderSummary } from "@/components/orders/order-summary";
-import { useAvailableDishes, useDishCategories } from "@/hooks/use-dishes";
+import {useAllDishes, useAvailableDishes, useDishCategories} from "@/hooks/use-dishes";
 import { usePlaceOrder, useScheduleOrder } from "@/hooks/use-orders";
 import { useCan } from "@/hooks/use-permissions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,14 +37,17 @@ interface CartItem {
 
 export default function CreateOrderPage() {
     const router = useRouter();
-    const { can } = useCan();
+    const { can , isAdmin} = useCan();
 
     const [cart, setCart] = useState<CartItem[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [isScheduleMode, setIsScheduleMode] = useState(false);
 
-    const { data: dishes, isLoading: dishesLoading } = useAvailableDishes();
+    const { data: dishes, isLoading: dishesLoading } = isAdmin()
+        ? useAllDishes()
+        : useAvailableDishes();
+
     const { data: categories } = useDishCategories();
 
     const placeOrderMutation = usePlaceOrder();
@@ -62,7 +65,7 @@ export default function CreateOrderPage() {
         const matchesSearch = searchQuery === "" ||
             dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             dish.description?.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch && dish.available;
+        return matchesCategory && matchesSearch && (isAdmin() || dish.available);
     }) || [];
 
     const addToCart = (dish: Dish) => {
