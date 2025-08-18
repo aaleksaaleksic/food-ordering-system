@@ -102,8 +102,7 @@ public class OrderServiceImpl implements OrderService {
         order.setItems(items);
 
         Order savedOrder = orderRepository.save(order);
-        log.info("Order {} scheduled successfully for user {} at {}",
-                savedOrder.getId(), user.getId(), scheduledFor);
+
 
         return savedOrder;
     }
