@@ -21,6 +21,20 @@ export function toastRequestError(err: unknown, fallback = 'Something went wrong
         const status = ax.response?.status;
         const data = ax.response?.data;
 
+        if (data && typeof data === 'string') {
+            if (data.includes('Maximum number of simultaneous orders')) {
+                return toast.error('🚫 Maximum Orders Limit', {
+                    description: 'You can only have 3 orders being prepared or delivered at the same time. Please wait for some orders to complete.'
+                });
+            }
+            if (data.includes('Cannot schedule order in the past')) {
+                return toast.error('⏰ Invalid Schedule Time', {
+                    description: 'You cannot schedule an order for a time in the past.'
+                });
+            }
+            return toast.error(data);
+        }
+
         if (data && typeof data === 'object' && typeof data.message === 'string') {
             return toast.error(data.message);
         }
