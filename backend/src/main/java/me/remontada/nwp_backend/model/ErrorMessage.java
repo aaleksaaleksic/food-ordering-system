@@ -74,4 +74,13 @@ public class ErrorMessage {
         error.setTimestamp(LocalDateTime.now());
         return error;
     }
+    public static ErrorMessage forCancelOrder(Long orderId, User user, String errorMessage) {
+        ErrorMessage error = new ErrorMessage();
+        error.setOrderId(orderId);
+        error.setOperation("CANCEL_ORDER");
+        error.setErrorMessage(errorMessage);
+        error.setUser(user);
+        error.setTimestamp(LocalDateTime.now());
+        return error;
+    }
 }

@@ -41,6 +41,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderStatusTransitionRepository transitionRepository;
 
+    @Autowired
+    private ErrorMessageService errorMessageService;
+
     @Override
     public List<Order> searchOrders(User user, List<OrderStatus> statuses,
                                     LocalDateTime dateFrom, LocalDateTime dateTo, Long userId) {
@@ -123,6 +126,9 @@ public class OrderServiceImpl implements OrderService {
         order.setActive(false);
 
         Order savedOrder = orderRepository.save(order);
+        ErrorMessage error = ErrorMessage.forCancelOrder(orderId,user, "You canceled this order");
+        errorMessageService.logCancelError(user,error.getErrorMessage(), error.getOperation());
+
 
         return savedOrder;
     }

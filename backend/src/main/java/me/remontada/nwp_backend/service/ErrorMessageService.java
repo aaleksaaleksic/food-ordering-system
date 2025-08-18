@@ -28,4 +28,10 @@ public interface ErrorMessageService {
 
 
     long countErrorsForUser(Long userId);
+
+    void logOrderError(User user, String errorMessage, String operation);
+
+    void logScheduleError(User user, String errorMessage, Long orderId);
+
+    public void logCancelError(User user, String errorMessage, String operation);
 }

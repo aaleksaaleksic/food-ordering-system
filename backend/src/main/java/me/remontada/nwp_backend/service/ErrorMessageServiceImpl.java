@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,53 @@ public class ErrorMessageServiceImpl implements ErrorMessageService {
             return errorMessageRepository.findAllByOrderByTimestampDesc(pageable);
         } else {
             return errorMessageRepository.findByUserIdOrderByTimestampDesc(user.getId(), pageable);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logOrderError(User user, String errorMessage, String operation) {
+        try {
+            ErrorMessage error = new ErrorMessage();
+            error.setOrderId(error.getOrderId());
+            error.setOperation(operation);
+            error.setErrorMessage(errorMessage);
+            error.setUser(user);
+            error.setTimestamp(LocalDateTime.now());
+
+            errorMessageRepository.save(error);
+        } catch (Exception e) {
+            log.error("Failed to log error message: {}", e.getMessage(), e);
+        }
+    }
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logCancelError(User user, String errorMessage, String operation) {
+        try {
+            ErrorMessage error = new ErrorMessage();
+            error.setOrderId(error.getOrderId());
+            error.setOperation(operation);
+            error.setErrorMessage(errorMessage);
+            error.setUser(user);
+            error.setTimestamp(LocalDateTime.now());
+
+            errorMessageRepository.save(error);
+        } catch (Exception e) {
+            log.error("Failed to log error message: {}", e.getMessage(), e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logScheduleError(User user, String errorMessage, Long orderId) {
+        try {
+            ErrorMessage error = new ErrorMessage();
+            error.setOrderId(orderId);
+            error.setOperation("AUTO_CREATE_SCHEDULED");
+            error.setErrorMessage(errorMessage);
+            error.setUser(user);
+            error.setTimestamp(LocalDateTime.now());
+
+            errorMessageRepository.save(error);
+        } catch (Exception e) {
+            log.error("Failed to log schedule error: {}", e.getMessage(), e);
         }
     }
 

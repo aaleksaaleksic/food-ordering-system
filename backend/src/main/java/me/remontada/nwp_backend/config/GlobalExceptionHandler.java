@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.remontada.nwp_backend.model.ErrorMessage;
 import me.remontada.nwp_backend.model.User;
 import me.remontada.nwp_backend.repository.ErrorMessageRepository;
+import me.remontada.nwp_backend.service.ErrorMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @Autowired
-    private ErrorMessageRepository errorMessageRepository;
+    private ErrorMessageService errorMessageService;
 
 
     @ExceptionHandler(RuntimeException.class)
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
 
                 try {
                     ErrorMessage error = ErrorMessage.forImmediateOrderFailure(currentUser, message);
-                    errorMessageRepository.save(error);
+                    errorMessageService.logOrderError(currentUser,error.getErrorMessage(), error.getOperation());
                     log.info("Error message saved to database for user: {}", currentUser.getId());
                 } catch (Exception e) {
                     log.error("Failed to save error message to database: {}", e.getMessage());
@@ -64,8 +65,7 @@ public class GlobalExceptionHandler {
                     error.setErrorMessage(message);
                     error.setUser(currentUser);
                     error.setTimestamp(LocalDateTime.now());
-                    errorMessageRepository.save(error);
-                    log.info("Schedule error message saved to database for user: {}", currentUser.getId());
+                    errorMessageService.logScheduleError(currentUser,error.getErrorMessage(), error.getOrderId());
                 } catch (Exception e) {
                     log.error("Failed to save schedule error message: {}", e.getMessage());
                 }
@@ -81,6 +81,7 @@ public class GlobalExceptionHandler {
         }
 
         if (message != null && message.contains("You can only track your own orders")) {
+
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(Map.of(
