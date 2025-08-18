@@ -61,8 +61,6 @@ public class OrderServiceImpl implements OrderService {
         if (!canCreateNewOrder()) {
             String errorMsg = "Maximum number of simultaneous orders (3) exceeded";
 
-            ErrorMessage error = ErrorMessage.forImmediateOrderFailure(user, errorMsg);
-            errorMessageRepository.save(error);
 
             throw new RuntimeException(errorMsg);
         }
@@ -171,9 +169,7 @@ public class OrderServiceImpl implements OrderService {
                     scheduleStatusTransition(order.getId(), OrderStatus.PREPARING, 10);
                 } else {
                     String errorMsg = "Maximum number of simultaneous orders (3) exceeded";
-                    ErrorMessage error = ErrorMessage.forScheduledOrderFailure(
-                            order.getId(), order.getCreatedBy(), errorMsg);
-                    errorMessageRepository.save(error);
+                    throw new RuntimeException(errorMsg);
 
                 }
             } catch (Exception e) {
