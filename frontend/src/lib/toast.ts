@@ -81,14 +81,4 @@ export function toastRequestError(err: unknown, fallback = 'Something went wrong
     return toast.error(fallback);
 }
 
-export function toastPromise<T>(p: Promise<T>, messages: {
-    loading?: string;
-    success?: string | ((val: T) => string);
-    error?: string | ((err: unknown) => string);
-}) {
-    return toast.promise(p, {
-        loading: messages.loading ?? 'Please wait…',
-        success: (val) => (typeof messages.success === 'function' ? messages.success(val) : (messages.success ?? 'Success!')),
-        error: (err) => (typeof messages.error === 'function' ? messages.error(err) : (messages.error ?? 'Failed')),
-    });
-}
+

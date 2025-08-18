@@ -12,7 +12,7 @@ import {
     Search,
     Plus,
     Menu,
-    X
+    X, AlertTriangle
 } from "lucide-react";
 
 import { useMe, useLogout } from "@/hooks/use-auth";
@@ -182,6 +182,15 @@ export function AppHeader() {
                                             Place New Order
                                         </Link>
                                     </DropdownMenuItem>
+                                )}
+                                {can("CAN_SEARCH_ORDER") && (
+                                    <Link
+                                        href="/errors"
+                                        className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-100"
+                                    >
+                                        <AlertTriangle className="w-4 h-4" />
+                                        Error History
+                                    </Link>
                                 )}
 
                                 {can("CAN_SEARCH_ORDER") && (
