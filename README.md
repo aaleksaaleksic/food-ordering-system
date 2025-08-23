@@ -44,3 +44,6 @@ A full-stack web application that simulates food ordering with real-time order t
 - **Authentication**: JWT stored in localStorage with automatic token refresh
 - **Routing**: Protected routes with permission-based guards
 
+<img width="1013" height="801" alt="Screenshot 2025-08-17 221905" src="https://github.com/user-attachments/assets/7e041f58-141e-46e4-9398-06417b68ac8a" />
+<img width="1591" height="908" alt="Screenshot 2025-08-17 220913" src="https://github.com/user-attachments/assets/52fa12ec-898f-4cb3-864c-51f9522e0a51" />
+<img width="1059" height="907" alt="Screenshot 2025-08-17 221918" src="https://github.com/user-attachments/assets/6a7d0a67-aca9-44f0-ba95-2d9c5a03d612" />
